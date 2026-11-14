@@ -1,5 +1,5 @@
 /* Seed data for development and demo. Passwords are placeholders: the API seeder must replace PasswordHash with real hashes. */
-USE LogistiCore;
+USE LogistiCoreDb;
 GO
 INSERT INTO Roles(Name) VALUES ('Admin'),('Dispatcher'),('WarehouseClerk'),('Driver'),('Billing'),('Customer');
 

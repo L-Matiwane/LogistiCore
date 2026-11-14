@@ -1,4 +1,4 @@
-USE LogistiCore;
+USE LogistiCoreDb;
 GO
 /* R1: Daily parcel movement */
 CREATE OR ALTER PROCEDURE dbo.sp_DailyParcelMovement @Date DATE AS

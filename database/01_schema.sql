@@ -1,7 +1,7 @@
-/* LogistiCore - SQL Server schema (v0.1) */
-IF DB_ID('LogistiCore') IS NULL CREATE DATABASE LogistiCore;
+/* LogistiCoreDb - SQL Server schema (v0.1) */
+IF DB_ID('LogistiCoreDb') IS NULL CREATE DATABASE LogistiCoreDb;
 GO
-USE LogistiCore;
+USE LogistiCoreDb;
 GO
 
 CREATE TABLE Roles (

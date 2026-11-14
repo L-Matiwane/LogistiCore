@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/LogistiCore.Api/LogistiCore.Api.csproj" />
+    <Project Path="src/LogistiCore.Application/LogistiCore.Application.csproj" />
+    <Project Path="src/LogistiCore.Domain/LogistiCore.Domain.csproj" />
+    <Project Path="src/LogistiCore.Infrastructure/LogistiCore.Infrastructure.csproj" />
+  </Folder>
+</Solution>
