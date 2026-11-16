@@ -68,3 +68,22 @@ Check contrast: white text on `#1D4ED8` and `#DB2777` passes WCAG AA. Use pink a
 |         | [Add to route →]   |  2. FCL-...-0009              |
 +---------+--------------------+-------------------------------+
 ```
+
+---
+
+## Brand update v2 (from the team's prototype)
+
+The team's prototype uses a **dark navy base with a blue-to-pink gradient**. This section supersedes the colour usage above where they differ.
+
+| Element | Specification |
+|---|---|
+| Background | Deep navy (`#0B1330` to `#13204F`); optional night-highway hero photo with a dark overlay |
+| Cards | Glass effect: `rgba(15,23,60,.72)`, 1px light border, 24px radius, backdrop blur |
+| Primary button | `linear-gradient(90deg, #1D4ED8, #DB2777)`, white uppercase bold text, 12px radius |
+| Secondary button | Transparent with a white outline, white uppercase text |
+| Headline | Uppercase, light weight; accent line in a light blue-to-pink gradient; **pink full stop** |
+| Logo | Wordmark `LOGISTICORE` with a blue-to-pink gradient, `COURIER SERVICE` underneath in spaced capitals |
+| Typeface | Inter |
+| Tagline | "Precision in motion." / "Tracking parcels across South Africa in real time." |
+
+Accessibility: keep body text white or `#CBD5E1` on navy (passes WCAG AA). Use pink for accents, not for long text.

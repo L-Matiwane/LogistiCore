@@ -1,7 +1,7 @@
 # Setup Guide
 
 ## Prerequisites
-.NET 8 SDK, Node 20+, SQL Server (LocalDB, Express or Docker), Visual Studio 2022 or VS Code, Git.
+.NET 10 SDK, Node 20+, SQL Server (LocalDB, Express or Docker), Visual Studio 2022 or VS Code, Git.
 
 ## 1. Database
 Option A (Docker):
@@ -26,15 +26,15 @@ dotnet add src/LogistiCore.Application reference src/LogistiCore.Domain
 dotnet add src/LogistiCore.Infrastructure reference src/LogistiCore.Application
 dotnet add src/LogistiCore.Api reference src/LogistiCore.Application src/LogistiCore.Infrastructure
 # packages
-dotnet add src/LogistiCore.Infrastructure package Microsoft.EntityFrameworkCore.SqlServer
-dotnet add src/LogistiCore.Api package Microsoft.AspNetCore.Authentication.JwtBearer
+dotnet add src/LogistiCore.Infrastructure package Microsoft.EntityFrameworkCore.SqlServer --version "10.*"
+dotnet add src/LogistiCore.Api package Microsoft.AspNetCore.Authentication.JwtBearer --version "10.*"
 dotnet add src/LogistiCore.Api package Serilog.AspNetCore
 dotnet add src/LogistiCore.Application package FluentValidation
 ```
 Set the connection string and JWT key with user-secrets:
 ```bash
 cd src/LogistiCore.Api
-dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost;Database=LogistiCore;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
+dotnet user-secrets set "ConnectionStrings:Default" "Server=localhost;Database=LogistiCoreDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True"
 dotnet user-secrets set "Jwt:Key" "<long-random-string-32+chars>"
 dotnet run
 ```

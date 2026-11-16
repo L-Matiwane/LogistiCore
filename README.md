@@ -5,7 +5,7 @@
 > Capstone project for IFS303E Systems Development Project, BCom Information Systems, University of Fort Hare.
 > Stack: **C# · ASP.NET Core Web API · SQL Server · React**
 
-![status](https://img.shields.io/badge/status-in%20development-EC4899) ![dotnet](https://img.shields.io/badge/.NET-8-1D4ED8) ![license](https://img.shields.io/badge/license-MIT-blue)
+![status](https://img.shields.io/badge/status-in%20development-EC4899) ![dotnet](https://img.shields.io/badge/.NET-10-1D4ED8) ![license](https://img.shields.io/badge/license-MIT-blue)
 
 ## The problem
 FCL manages parcel intake, warehouse sorting and driver dispatch manually. Errors, lost parcels and delayed deliveries are common.

@@ -14,7 +14,7 @@ flowchart LR
 ## Solution layout
 ```
 backend/
-  LogistiCore.sln
+  LogistiCore.slnx
   src/
     LogistiCore.Api/             Controllers, middleware, auth, Swagger
     LogistiCore.Application/     Services, DTOs, validators, interfaces
@@ -32,7 +32,7 @@ docs/
 ## Technology choices
 | Concern | Choice | Reason |
 |---|---|---|
-| API | ASP.NET Core 8 Web API | Taught, industry standard |
+| API | ASP.NET Core 10 Web API | Taught, industry standard |
 | ORM | EF Core (code-first migrations) | Productivity; stored procedures for reports |
 | DB | SQL Server | Required stack |
 | Auth | JWT bearer + ASP.NET Core Identity password hasher, role policies | Stateless, simple |
