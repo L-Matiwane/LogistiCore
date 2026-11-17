@@ -28,6 +28,9 @@ public class Parcel
     public string CurrentStatus { get; set; } = string.Empty;
     public bool IsInvoiced { get; set; }
 
+    public int? BinId { get; set; }
+    public WarehouseBin? Bin { get; set; }
+
     public int RegisteredByUserId { get; set; }
     public DateTime RegisteredAt { get; set; }
 

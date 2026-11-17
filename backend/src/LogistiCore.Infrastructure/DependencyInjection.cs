@@ -1,10 +1,12 @@
 using LogistiCore.Application.Customers;
 using LogistiCore.Application.Dashboard;
 using LogistiCore.Application.Parcels;
+using LogistiCore.Application.Warehouse;
 using LogistiCore.Infrastructure.Customers;
 using LogistiCore.Infrastructure.Dashboard;
 using LogistiCore.Infrastructure.Parcels;
 using LogistiCore.Infrastructure.Persistence;
+using LogistiCore.Infrastructure.Warehouse;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -21,6 +23,7 @@ public static class DependencyInjection
         services.AddScoped<IParcelService, ParcelService>();
         services.AddScoped<ICustomerLookup, CustomerLookup>();
         services.AddScoped<IDashboardService, DashboardService>();
+        services.AddScoped<IWarehouseService, WarehouseService>();
         return services;
     }
 }

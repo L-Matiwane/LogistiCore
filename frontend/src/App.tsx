@@ -9,6 +9,7 @@ import LoginPage from './pages/LoginPage'
 import ParcelDetailPage from './pages/ParcelDetailPage'
 import ParcelListPage from './pages/ParcelListPage'
 import RegisterParcelPage from './pages/RegisterParcelPage'
+import WarehousePage from './pages/WarehousePage'
 
 export default function App() {
   return (
@@ -37,6 +38,14 @@ export default function App() {
               element={
                 <ProtectedRoute roles={intakeRoles}>
                   <RegisterParcelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="warehouse"
+              element={
+                <ProtectedRoute roles={intakeRoles}>
+                  <WarehousePage />
                 </ProtectedRoute>
               }
             />

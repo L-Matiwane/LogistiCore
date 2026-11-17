@@ -104,5 +104,6 @@ app.MapGet("/api/v1/admin/ping", () => Results.Ok(new { message = "Hello, Admin.
     .RequireAuthorization(policy => policy.RequireRole("Admin"));
 
 app.MapParcelEndpoints();
+app.MapWarehouseEndpoints();
 
 app.Run();

@@ -13,6 +13,8 @@ public class AppDbContext : DbContext
     public DbSet<RateCard> RateCards => Set<RateCard>();
     public DbSet<Parcel> Parcels => Set<Parcel>();
     public DbSet<ParcelStatusHistory> StatusHistory => Set<ParcelStatusHistory>();
+    public DbSet<WarehouseBin> Bins => Set<WarehouseBin>();
+    public DbSet<ParcelException> ParcelExceptions => Set<ParcelException>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -49,6 +51,19 @@ public class AppDbContext : DbContext
             e.Property(x => x.Price).HasPrecision(10, 2);
             e.HasOne(x => x.Customer).WithMany().HasForeignKey(x => x.CustomerId);
             e.HasMany(x => x.History).WithOne().HasForeignKey(h => h.ParcelId);
+            e.HasOne(x => x.Bin).WithMany().HasForeignKey(x => x.BinId);
+        });
+
+        modelBuilder.Entity<WarehouseBin>(e =>
+        {
+            e.ToTable("WarehouseBins");
+            e.HasKey(x => x.BinId);
+        });
+
+        modelBuilder.Entity<ParcelException>(e =>
+        {
+            e.ToTable("ParcelExceptions");
+            e.HasKey(x => x.ExceptionId);
         });
 
         modelBuilder.Entity<ParcelStatusHistory>(e =>
