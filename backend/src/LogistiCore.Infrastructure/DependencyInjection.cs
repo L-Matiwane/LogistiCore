@@ -1,3 +1,9 @@
+using LogistiCore.Application.Customers;
+using LogistiCore.Application.Dashboard;
+using LogistiCore.Application.Parcels;
+using LogistiCore.Infrastructure.Customers;
+using LogistiCore.Infrastructure.Dashboard;
+using LogistiCore.Infrastructure.Parcels;
 using LogistiCore.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +17,10 @@ public static class DependencyInjection
     {
         services.AddDbContext<AppDbContext>(options =>
             options.UseSqlServer(config.GetConnectionString("Default")));
+
+        services.AddScoped<IParcelService, ParcelService>();
+        services.AddScoped<ICustomerLookup, CustomerLookup>();
+        services.AddScoped<IDashboardService, DashboardService>();
         return services;
     }
 }

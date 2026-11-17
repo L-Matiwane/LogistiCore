@@ -1,14 +1,12 @@
 import { useCallback, useMemo, useState } from 'react'
 import type { ReactNode } from 'react'
 import { login } from '../api/client'
-import { AuthContext } from './AuthContext'
+import { AuthContext, SESSION_KEY } from './AuthContext'
 import type { Session } from './AuthContext'
-
-const STORAGE_KEY = 'logisticore.session'
 
 function loadSession(): Session | null {
   try {
-    const raw = sessionStorage.getItem(STORAGE_KEY)
+    const raw = sessionStorage.getItem(SESSION_KEY)
     return raw ? (JSON.parse(raw) as Session) : null
   } catch {
     return null
@@ -20,12 +18,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = useCallback(async (email: string, password: string) => {
     const result = await login(email, password)
-    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(result))
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify(result))
     setSession(result)
   }, [])
 
   const signOut = useCallback(() => {
-    sessionStorage.removeItem(STORAGE_KEY)
+    sessionStorage.removeItem(SESSION_KEY)
     setSession(null)
   }, [])
 

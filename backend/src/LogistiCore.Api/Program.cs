@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using System.Text;
 using LogistiCore.Api.Auth;
+using LogistiCore.Api.Endpoints;
 using LogistiCore.Domain.Entities;
 using LogistiCore.Infrastructure;
 using LogistiCore.Infrastructure.Persistence;
@@ -101,5 +102,7 @@ app.MapGet("/api/v1/auth/me", (ClaimsPrincipal principal) => Results.Ok(new
 
 app.MapGet("/api/v1/admin/ping", () => Results.Ok(new { message = "Hello, Admin." }))
     .RequireAuthorization(policy => policy.RequireRole("Admin"));
+
+app.MapParcelEndpoints();
 
 app.Run();
