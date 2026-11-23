@@ -5,4 +5,7 @@
     <Project Path="src/LogistiCore.Domain/LogistiCore.Domain.csproj" />
     <Project Path="src/LogistiCore.Infrastructure/LogistiCore.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/LogistiCore.UnitTests/LogistiCore.UnitTests.csproj" />
+  </Folder>
 </Solution>

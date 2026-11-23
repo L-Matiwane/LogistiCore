@@ -109,10 +109,13 @@ export default function WarehousePage() {
     }
   }
 
-  const zones = bins.reduce<Record<string, Bin[]>>((groups, bin) => {
-    ;(groups[bin.zone] ??= []).push(bin)
-    return groups
-  }, {})
+  const zones: Record<string, Bin[]> = {}
+  for (const bin of bins) {
+    if (!zones[bin.zone]) {
+      zones[bin.zone] = []
+    }
+    zones[bin.zone].push(bin)
+  }
 
   return (
     <>
