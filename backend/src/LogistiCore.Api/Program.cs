@@ -105,5 +105,6 @@ app.MapGet("/api/v1/admin/ping", () => Results.Ok(new { message = "Hello, Admin.
 
 app.MapParcelEndpoints();
 app.MapWarehouseEndpoints();
+app.MapDispatchEndpoints();
 
 app.Run();

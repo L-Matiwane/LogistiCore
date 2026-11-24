@@ -5,8 +5,7 @@ Built for Forte Courier & Logistics (FCL), a fictional company, as the capstone 
 
 ![.NET](https://img.shields.io/badge/.NET-10-1D4ED8) ![React](https://img.shields.io/badge/React-19-EC4899) ![SQL Server](https://img.shields.io/badge/SQL%20Server-Express-1D4ED8) ![status](https://img.shields.io/badge/status-in%20development-EC4899)
 
-<!-- Add screenshots here once you have them, for example: -->
-<!-- ![Login](docs/images/login.png) ![Register parcel](docs/images/register-parcel.png) ![Dashboard](docs/images/dashboard.png) -->
+![Login](docs/images/login.png) ![Register parcel](docs/images/register-parcel.png) ![Dashboard](docs/images/dashboard.png) ![Warehouse](docs/images/warehouse.png) ![Dispatch](docs/images/dispatch.png)
 
 ## The problem
 FCL handles parcel intake, warehouse sorting and driver dispatch by hand. Typing errors, lost parcels and late deliveries are common, customers cannot see where their parcels are, and billing is slow.
@@ -22,8 +21,8 @@ LogistiCore replaces the paper process with one system. A parcel gets a unique t
 | A. Parcel directory | Done | Search, filter by status, paging, parcel detail with full status history |
 | B. Warehouse | Done | Scan to receive, sort into bins (with capacity), report lost or damaged |
 | Dashboard | Done | Live counts and a 7-day chart from the database |
-| C. Dispatch and routes | Next | Drivers, vehicles, routes, assigning parcels with capacity and double-booking checks |
-| D. Delivery | Planned | Driver manifest, proof of delivery, failed attempts |
+| C. Dispatch and routes | Done | Plan routes by day, assign driver and vehicle, load sorted parcels with capacity and double-booking checks, release or cancel |
+| D. Delivery | Next | Driver manifest, proof of delivery, failed attempts |
 | E. Notifications | Planned | Customer messages at key status changes, public tracking page |
 | F. Billing | Planned | Invoices, monthly statements, payments |
 | Reports | Planned | Daily movement, driver performance, monthly revenue, lost and damaged |
@@ -139,7 +138,7 @@ LogistiCore/
 | [Testing strategy](docs/08-testing-strategy.md) | |
 | [Roadmap](docs/09-roadmap.md) | Sprint plan |
 | [Team workflow](docs/10-team-workflow.md) | Branching, commits, reviews |
-| [Parcels module](docs/12-parcels-module.md), [Warehouse module](docs/13-warehouse-module.md) | |
+| [Parcels module](docs/12-parcels-module.md), [Warehouse module](docs/13-warehouse-module.md), [Dispatch module](docs/15-dispatch-module.md) | |
 | [Design decisions](docs/14-design-decisions.md) | Why the system is built the way it is |
 
 ## Development notes
@@ -148,9 +147,13 @@ Parts of the code and documentation were produced with AI assistance and reviewe
 ## Team
 | Name | Role |
 |---|---|
-| Lelethu Matiwane | _add your role, for example Tech lead and backend_ |
-| _Teammate_ | _role_ |
-| _Teammate_ | _role_ |
+| Bathabile Malunga | Project Manager |
+| Lelethu Matiwane | Developer |
+| Lindani Ishmael Zakwe | UX/UI Designer |
+| Makline Sibanda | Business Analyst |
+| Sibahle Qongqo | Business Analyst |
+| Mihle Dudumashe | Business Analyst |
+| Hlumela Ntloko | Business Analyst |
 
 ## Licence
 MIT

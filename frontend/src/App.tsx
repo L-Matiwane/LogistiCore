@@ -3,7 +3,11 @@ import { AuthProvider } from './auth/AuthProvider'
 import AppLayout from './components/AppLayout'
 import ProtectedRoute from './components/ProtectedRoute'
 import { intakeRoles, navItems, staffRoles } from './navigation'
+
+const dispatchRoles = ['Admin', 'Dispatcher']
 import ComingSoonPage from './pages/ComingSoonPage'
+import DispatchPage from './pages/DispatchPage'
+import FleetPage from './pages/FleetPage'
 import HomeRoute from './pages/HomeRoute'
 import LoginPage from './pages/LoginPage'
 import ParcelDetailPage from './pages/ParcelDetailPage'
@@ -38,6 +42,22 @@ export default function App() {
               element={
                 <ProtectedRoute roles={intakeRoles}>
                   <RegisterParcelPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="dispatch"
+              element={
+                <ProtectedRoute roles={dispatchRoles}>
+                  <DispatchPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="fleet"
+              element={
+                <ProtectedRoute roles={dispatchRoles}>
+                  <FleetPage />
                 </ProtectedRoute>
               }
             />

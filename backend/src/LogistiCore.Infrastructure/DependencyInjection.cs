@@ -1,9 +1,11 @@
 using LogistiCore.Application.Customers;
 using LogistiCore.Application.Dashboard;
+using LogistiCore.Application.Dispatch;
 using LogistiCore.Application.Parcels;
 using LogistiCore.Application.Warehouse;
 using LogistiCore.Infrastructure.Customers;
 using LogistiCore.Infrastructure.Dashboard;
+using LogistiCore.Infrastructure.Dispatch;
 using LogistiCore.Infrastructure.Parcels;
 using LogistiCore.Infrastructure.Persistence;
 using LogistiCore.Infrastructure.Warehouse;
@@ -24,6 +26,7 @@ public static class DependencyInjection
         services.AddScoped<ICustomerLookup, CustomerLookup>();
         services.AddScoped<IDashboardService, DashboardService>();
         services.AddScoped<IWarehouseService, WarehouseService>();
+        services.AddScoped<IDispatchService, DispatchService>();
         return services;
     }
 }

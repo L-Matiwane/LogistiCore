@@ -15,6 +15,10 @@ public class AppDbContext : DbContext
     public DbSet<ParcelStatusHistory> StatusHistory => Set<ParcelStatusHistory>();
     public DbSet<WarehouseBin> Bins => Set<WarehouseBin>();
     public DbSet<ParcelException> ParcelExceptions => Set<ParcelException>();
+    public DbSet<Driver> Drivers => Set<Driver>();
+    public DbSet<Vehicle> Vehicles => Set<Vehicle>();
+    public DbSet<DeliveryRoute> DeliveryRoutes => Set<DeliveryRoute>();
+    public DbSet<RouteParcel> RouteParcels => Set<RouteParcel>();
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
@@ -64,6 +68,36 @@ public class AppDbContext : DbContext
         {
             e.ToTable("ParcelExceptions");
             e.HasKey(x => x.ExceptionId);
+        });
+
+        modelBuilder.Entity<Driver>(e =>
+        {
+            e.ToTable("Drivers");
+            e.HasKey(x => x.DriverId);
+            e.HasOne(x => x.User).WithMany().HasForeignKey(x => x.UserId);
+        });
+
+        modelBuilder.Entity<Vehicle>(e =>
+        {
+            e.ToTable("Vehicles");
+            e.HasKey(x => x.VehicleId);
+            e.Property(x => x.CapacityKg).HasPrecision(8, 2);
+        });
+
+        modelBuilder.Entity<DeliveryRoute>(e =>
+        {
+            e.ToTable("Routes");
+            e.HasKey(x => x.RouteId);
+            e.HasOne(x => x.Driver).WithMany().HasForeignKey(x => x.DriverId);
+            e.HasOne(x => x.Vehicle).WithMany().HasForeignKey(x => x.VehicleId);
+            e.HasMany(x => x.Parcels).WithOne().HasForeignKey(x => x.RouteId);
+        });
+
+        modelBuilder.Entity<RouteParcel>(e =>
+        {
+            e.ToTable("RouteParcels");
+            e.HasKey(x => x.RouteParcelId);
+            e.HasOne(x => x.Parcel).WithMany().HasForeignKey(x => x.ParcelId);
         });
 
         modelBuilder.Entity<ParcelStatusHistory>(e =>

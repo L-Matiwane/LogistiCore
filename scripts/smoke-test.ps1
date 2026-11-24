@@ -220,6 +220,96 @@ Check 'Dashboard counts parcels registered today' ($summary.Data.parcelsToday -g
 Check 'Dashboard counts the exception' ($summary.Data.exceptions -ge 1)
 Check 'Weekly volume has 7 days' (@($summary.Data.weeklyVolume).Count -eq 7)
 
+# ---------------------------------------------------------------- dispatch
+Write-Host "`n8. Dispatch"
+$drivers = Invoke-Api -Path '/api/v1/drivers' -Token $dispatcherToken
+Check 'Drivers load' ($drivers.Status -eq 200 -and @($drivers.Data).Count -ge 2)
+$vehicleList = Invoke-Api -Path '/api/v1/vehicles' -Token $dispatcherToken
+Check 'Vehicles load' ($vehicleList.Status -eq 200 -and @($vehicleList.Data).Count -ge 1)
+$driverA = @($drivers.Data)[0]
+$driverB = @($drivers.Data)[1]
+$bigVehicle = @($vehicleList.Data | Where-Object { $_.isActive -and $_.capacityKg -ge 100 }) | Select-Object -First 1
+
+$clerkRoutes = Invoke-Api -Path '/api/v1/routes' -Token $clerkToken
+Check 'A clerk cannot open dispatch data (403)' ($clerkRoutes.Status -eq 403)
+$waiting = Invoke-Api -Path '/api/v1/dispatch/parcels' -Token $dispatcherToken
+Check 'Sorted parcels waiting for a route are listed' ($waiting.Status -eq 200 -and (@($waiting.Data) | Where-Object { $_.trackingNo -eq $track1 }))
+
+$day = (Get-Date).AddDays((Get-Random -Minimum 60 -Maximum 1500)).ToString('yyyy-MM-dd')
+$day2 = (Get-Date).AddDays((Get-Random -Minimum 1600 -Maximum 3000)).ToString('yyyy-MM-dd')
+$yesterday = (Get-Date).AddDays(-1).ToString('yyyy-MM-dd')
+
+$pastRoute = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $dispatcherToken -Body @{ name = 'Past'; routeDate = $yesterday; driverId = $driverA.driverId; vehicleId = $bigVehicle.vehicleId }
+Check 'A route in the past is rejected (400)' ($pastRoute.Status -eq 400)
+$clerkCreate = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $clerkToken -Body @{ name = 'Nope'; routeDate = $day; driverId = $driverA.driverId; vehicleId = $bigVehicle.vehicleId }
+Check 'A clerk cannot create routes (403)' ($clerkCreate.Status -eq 403)
+
+$r1 = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $dispatcherToken -Body @{ name = 'Smoke route'; routeDate = $day; driverId = $driverA.driverId; vehicleId = $bigVehicle.vehicleId }
+Check 'A dispatcher can create a route (201)' ($r1.Status -eq 201 -and $r1.Data.status -eq 'Planned') ("status " + $r1.Status)
+$routeId1 = $r1.Data.routeId
+$dupDriver = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $dispatcherToken -Body @{ name = 'Again'; routeDate = $day; driverId = $driverA.driverId; vehicleId = $bigVehicle.vehicleId }
+Check 'The same driver cannot have two routes on one day (422)' ($dupDriver.Status -eq 422)
+$dupVehicle = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $dispatcherToken -Body @{ name = 'Again'; routeDate = $day; driverId = $driverB.driverId; vehicleId = $bigVehicle.vehicleId }
+Check 'The same vehicle cannot be used twice on one day (422)' ($dupVehicle.Status -eq 422)
+
+$add = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId1/parcels" -Token $dispatcherToken -Body @{ parcelIds = @($parcelId1) }
+Check 'A sorted parcel can be added to a route' ($add.Status -eq 200 -and @($add.Data.parcels).Count -eq 1 -and $add.Data.loadKg -eq 1.5) ("status " + $add.Status)
+$assigned = Invoke-Api -Path "/api/v1/parcels/$parcelId1" -Token $adminToken
+Check 'The parcel is now Assigned' ($assigned.Data.currentStatus -eq 'Assigned') ("got " + $assigned.Data.currentStatus)
+$addAgain = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId1/parcels" -Token $dispatcherToken -Body @{ parcelIds = @($parcelId1) }
+Check 'An assigned parcel cannot be added again (422)' ($addAgain.Status -eq 422)
+$dayRoutes = Invoke-Api -Path "/api/v1/routes?date=$day" -Token $dispatcherToken
+Check 'The day view lists the route with its parcel' ($dayRoutes.Status -eq 200 -and @($dayRoutes.Data).Count -eq 1 -and @($dayRoutes.Data)[0].parcels.Count -eq 1)
+
+# a second sorted parcel to use for the released-route and capacity checks
+$p5 = Invoke-Api -Method POST -Path '/api/v1/parcels' -Token $clerkToken -Body (New-ParcelBody $customerId 1.5 'Standard')
+$null = Invoke-Api -Method POST -Path '/api/v1/warehouse/receive' -Token $clerkToken -Body @{ trackingNo = $p5.Data.trackingNo }
+$binsNow = Invoke-Api -Path '/api/v1/warehouse/bins' -Token $clerkToken
+$emptiest = @($binsNow.Data) | Sort-Object occupied | Select-Object -First 1
+$null = Invoke-Api -Method POST -Path '/api/v1/warehouse/sort' -Token $clerkToken -Body @{ trackingNo = $p5.Data.trackingNo; binId = $emptiest.binId }
+$parcelId5 = $p5.Data.parcelId
+
+$release = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId1/release" -Token $dispatcherToken
+Check 'A route with parcels can be released' ($release.Status -eq 200 -and $release.Data.status -eq 'Released') ("status " + $release.Status)
+$addReleased = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId1/parcels" -Token $dispatcherToken -Body @{ parcelIds = @($parcelId5) }
+Check 'Parcels cannot be added to a released route (422)' ($addReleased.Status -eq 422)
+$removeReleased = Invoke-Api -Method DELETE -Path "/api/v1/routes/$routeId1/parcels/$parcelId1" -Token $dispatcherToken
+Check 'Parcels cannot be removed from a released route (422)' ($removeReleased.Status -eq 422)
+
+$cancel = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId1/cancel" -Token $dispatcherToken
+Check 'A released route can be cancelled' ($cancel.Status -eq 200 -and $cancel.Data.status -eq 'Cancelled') ("status " + $cancel.Status)
+$backToSorted = Invoke-Api -Path "/api/v1/parcels/$parcelId1" -Token $adminToken
+Check 'Cancelling returns the parcel to Sorted' ($backToSorted.Data.currentStatus -eq 'Sorted') ("got " + $backToSorted.Data.currentStatus)
+
+$r2 = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $dispatcherToken -Body @{ name = 'Smoke route 2'; routeDate = $day; driverId = $driverA.driverId; vehicleId = $bigVehicle.vehicleId }
+Check 'A cancelled route frees the driver and vehicle for that day' ($r2.Status -eq 201) ("status " + $r2.Status)
+$routeId2 = $r2.Data.routeId
+$emptyRelease = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId2/release" -Token $dispatcherToken
+Check 'An empty route cannot be released (422)' ($emptyRelease.Status -eq 422)
+$null = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId2/parcels" -Token $dispatcherToken -Body @{ parcelIds = @($parcelId5) }
+$removed = Invoke-Api -Method DELETE -Path "/api/v1/routes/$routeId2/parcels/$parcelId5" -Token $dispatcherToken
+Check 'A parcel can be removed from a planned route' ($removed.Status -eq 200 -and @($removed.Data.parcels).Count -eq 0) ("status " + $removed.Status)
+$afterRemove = Invoke-Api -Path "/api/v1/parcels/$parcelId5" -Token $adminToken
+Check 'The removed parcel is Sorted again' ($afterRemove.Data.currentStatus -eq 'Sorted') ("got " + $afterRemove.Data.currentStatus)
+$null = Invoke-Api -Method POST -Path "/api/v1/routes/$routeId2/cancel" -Token $dispatcherToken
+
+# capacity: a 1 kg vehicle cannot take a 1.5 kg parcel
+$reg = 'SMK ' + (Get-Random -Minimum 1000 -Maximum 9999)
+$tiny = Invoke-Api -Method POST -Path '/api/v1/vehicles' -Token $dispatcherToken -Body @{ registration = $reg; description = 'Smoke test van'; capacityKg = 1; isActive = $true }
+Check 'A dispatcher can add a vehicle (201)' ($tiny.Status -eq 201) ("status " + $tiny.Status)
+$tinyDup = Invoke-Api -Method POST -Path '/api/v1/vehicles' -Token $dispatcherToken -Body @{ registration = $reg; description = 'Again'; capacityKg = 5; isActive = $true }
+Check 'A duplicate registration is rejected (422)' ($tinyDup.Status -eq 422)
+$tinyBad = Invoke-Api -Method POST -Path '/api/v1/vehicles' -Token $dispatcherToken -Body @{ registration = 'X1'; description = ''; capacityKg = 0; isActive = $true }
+Check 'A vehicle with no capacity is rejected (400)' ($tinyBad.Status -eq 400)
+$rTiny = Invoke-Api -Method POST -Path '/api/v1/routes' -Token $dispatcherToken -Body @{ name = 'Tiny'; routeDate = $day2; driverId = $driverB.driverId; vehicleId = $tiny.Data.vehicleId }
+$tooHeavy = Invoke-Api -Method POST -Path ("/api/v1/routes/" + $rTiny.Data.routeId + "/parcels") -Token $dispatcherToken -Body @{ parcelIds = @($parcelId1) }
+Check 'A parcel heavier than the vehicle capacity is rejected (422)' ($tooHeavy.Status -eq 422) ("status " + $tooHeavy.Status)
+$inUse = Invoke-Api -Method PUT -Path ("/api/v1/vehicles/" + $tiny.Data.vehicleId) -Token $dispatcherToken -Body @{ registration = $reg; description = 'Smoke test van'; capacityKg = 1; isActive = $false }
+Check 'A vehicle on a planned route cannot be taken out of service (422)' ($inUse.Status -eq 422)
+$null = Invoke-Api -Method POST -Path ("/api/v1/routes/" + $rTiny.Data.routeId + "/cancel") -Token $dispatcherToken
+$retire = Invoke-Api -Method PUT -Path ("/api/v1/vehicles/" + $tiny.Data.vehicleId) -Token $dispatcherToken -Body @{ registration = $reg; description = 'Smoke test van'; capacityKg = 1; isActive = $false }
+Check 'After the route is cancelled the vehicle can be retired' ($retire.Status -eq 200 -and $retire.Data.isActive -eq $false) ("status " + $retire.Status)
+
 # ---------------------------------------------------------------- result
 Write-Host ''
 Write-Host ("Passed: " + $script:Passed + "   Failed: " + $script:Failed) -ForegroundColor $(if ($script:Failed -eq 0) { 'Green' } else { 'Red' })
